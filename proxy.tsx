@@ -1,4 +1,3 @@
-import { error } from 'console';
 import jwt from 'jsonwebtoken';
 import { NextRequest, NextResponse } from 'next/server';
 
