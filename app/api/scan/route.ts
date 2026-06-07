@@ -52,11 +52,10 @@ export async function POST(req: Request) {
   }
 }
 
-
 export async function GET(req: NextRequest) {
   try {
-    const token = req.headers.get('Authorization')?.replace('Bearer ', '')
-    const decoded = jwt.verify(token!, process.env.JWT_SECRET!) as { userId: string }
+    const token = req.headers.get('Authorization')?.replace('Bearer ', '');
+    const decoded = jwt.verify(token!, process.env.JWT_SECRET!) as { userId: string };
 
     const scans = await prisma.scan.findMany({
       where: { userId: decoded.userId },
@@ -67,13 +66,12 @@ export async function GET(req: NextRequest) {
         verdict: true,
         score: true,
         createdAt: true,
-      }
-    })
+      },
+    });
 
-    return NextResponse.json(scans)
-
+    return NextResponse.json(scans);
   } catch (error) {
-    console.error(error)
-    return NextResponse.json({ error: 'Sunucu hatası' }, { status: 500 })
+    console.error(error);
+    return NextResponse.json({ error: 'Sunucu hatası' }, { status: 500 });
   }
 }
