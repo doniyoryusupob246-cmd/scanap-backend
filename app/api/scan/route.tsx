@@ -1,6 +1,6 @@
 import prisma from '@/prisma/prisma-client';
 import jwt from 'jsonwebtoken';
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 export async function POST(req: Request) {
   try {
     const { hash, fileName } = await req.json();
@@ -49,5 +49,31 @@ export async function POST(req: Request) {
   } catch (error) {
     console.error(error);
     return NextResponse.json({ error: 'Sunucu hatası' }, { status: 500 });
+  }
+}
+
+
+export async function GET(req: NextRequest) {
+  try {
+    const token = req.headers.get('Authorization')?.replace('Bearer ', '')
+    const decoded = jwt.verify(token!, process.env.JWT_SECRET!) as { userId: string }
+
+    const scans = await prisma.scan.findMany({
+      where: { userId: decoded.userId },
+      orderBy: { createdAt: 'desc' },
+      select: {
+        id: true,
+        fileName: true,
+        verdict: true,
+        score: true,
+        createdAt: true,
+      }
+    })
+
+    return NextResponse.json(scans)
+
+  } catch (error) {
+    console.error(error)
+    return NextResponse.json({ error: 'Sunucu hatası' }, { status: 500 })
   }
 }
